@@ -1,0 +1,88 @@
+name: valet-testing-integration/travis-ci-example
+on:
+  workflow_dispatch:
+jobs:
+  first_stage:
+    runs-on: ubuntu-16.04
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: "${{ matrix.rvm }}"
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: "./test 2"
+    - run: if [pull_request == false]
+    - run: sh hello world
+    strategy:
+      matrix:
+        ISOLATED:
+        - true
+        - false
+        rvm:
+        - 2.5
+        - 2.2
+        gemfile:
+        - gemfiles/Gemfile.rails-3.2.x
+        - gemfiles/Gemfile.rails-3.0.x
+#       # 'allow_failures' transformations are currently unsupported.
+    env:
+      ISOLATED: "${{ matrix.ISOLATED }}"
+      BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
+  first_stage_2:
+    runs-on: ubuntu-16.04
+    env:
+      ISOLATED: "${{ secrets.ISOLATED }}"
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 2.5
+#     # 'gemfile' dependencies are currently unsupported
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: foo
+    - run: "./test 1"
+  first_stage_3:
+    runs-on: ubuntu-16.04
+    env:
+      ISOLATED: true
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 2.2
+#     # 'gemfile' dependencies are currently unsupported
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: "./test 2"
+    - run: if [pull_request == false]
+    - run: sh hello world
+  deploy:
+    needs:
+    - first_stage
+    - first_stage_2
+    - first_stage_3
+    runs-on: ubuntu-16.04
+    env:
+      ISOLATED: true
+    if: ${{ github.ref == 'refs/heads/master' }}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 2.5
+#     # 'gemfile' dependencies are currently unsupported
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: "./test 2"
+    - run: if [pull_request == false]
+    - run: sh hello world
+#     # This item has no matching transformer
+#     - npm:
+#         provider: npm
+#       if: "${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/' }}"
