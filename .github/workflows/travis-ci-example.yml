@@ -1,0 +1,25 @@
+name: valet-testing-integration/travis-ci-example
+on:
+#   # This item has no matching transformer
+#   builds_only_with_travis_yml: false
+  push:
+    branches:
+    - "**/*"
+  pull_request:
+#   # This item has no matching transformer
+#   maximum_number_of_builds: 0
+#   # This item has no matching transformer
+#   auto_cancel_pushes: false
+#   # This item has no matching transformer
+#   auto_cancel_pull_requests: false
+#   # This item has no matching transformer
+#   config_validation: true
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+#     # 'changing something in the audit! sudo' was not transformed because there is no suitable equivalent in GitHub Actions
+    - run: bundle install --jobs=3 --retry=3
+    - run: rake
