@@ -1,0 +1,24 @@
+name: ethanis/custom-transformer-demo
+on:
+  schedule:
+  - cron: 49 12 * * *
+jobs:
+  Build:
+    runs-on:
+      - self-hosted
+      - jenkins-main
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+#     # This item has no matching transformer
+#     - buildJavascriptApp:
+#       - key: deploy
+#         value:
+#           isLiteral: true
+#           value: false
+    - name: http request
+      uses: CamiloGarciaLaRotta/watermelon-http-client@v1
+      with:
+        url: http://www.example.com
+        method: POST
+        data: This build is bananas
