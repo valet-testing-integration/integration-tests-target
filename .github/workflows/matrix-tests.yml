@@ -1,0 +1,16 @@
+name: valet-testing-unit/circle-ci-full-configuration-example/matrix-tests
+on:
+  workflow_dispatch:
+env:
+  example_env: xxxxple
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: circleci/ruby:2.5.1-node-browsers
+      credentials:
+        username: mydockerhub-user
+        password: "$DOCKERHUB_PASSWORD"
+    steps:
+    - uses: actions/checkout@v2
+    - run: echo "this is the test job"
