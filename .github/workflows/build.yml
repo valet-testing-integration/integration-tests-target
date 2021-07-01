@@ -1,0 +1,17 @@
+name: valet-testing-unit/circle-ci-full-configuration-example/build
+on:
+  schedule:
+  - cron: 0 0 * * *
+env:
+  example_env: xxxxple
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: circleci/ruby:2.5.1-node-browsers
+      credentials:
+        username: mydockerhub-user
+        password: "$DOCKERHUB_PASSWORD"
+    steps:
+    - uses: actions/checkout@v2
+    - run: echo "this is the build job"
