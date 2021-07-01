@@ -1,0 +1,37 @@
+name: valet-testing-unit/circle-ci-full-configuration-example/Hello_Workflow
+on:
+  workflow_dispatch:
+env:
+  example_env: xxxxple
+jobs:
+  hello/hello-build:
+    runs-on: ubuntu-latest
+    steps:
+    - run: echo "install custom dependency"
+    - run: echo "upload artifact to s3"
+  command_test:
+    runs-on: ubuntu-latest
+    container:
+      image: circleci/ruby:2.5.1-node-browsers
+      credentials:
+        username: mydockerhub-user
+        password: "$DOCKERHUB_PASSWORD"
+    steps:
+#     # This item has no matching transformer
+#     - description: A very simple command for demonstration purposes
+#     # This item has no matching transformer
+#     - orb:
+#         name:
+#           commands:
+#             my_command:
+#               steps:
+#               - run: echo "Run my tests"
+#           jobs:
+#             my_job:
+#               executor: node/default
+#               steps:
+#               - checkout
+#               - my_command
+#               - store_test_results:
+#                   path: test-results
+#         value: my_command
