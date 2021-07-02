@@ -1,0 +1,43 @@
+name: integration-tests/designer/freestyle-elephant
+on:
+  workflow_run:
+    workflows:
+    - freestyle-elephant-windows
+    types:
+    - completed
+  schedule:
+  - cron: 1 1 1 1 *
+  push:
+  pull_request:
+    branches:
+    - master
+#   # GhprbTrigger refspec or branch name is misconfigured.
+#   pull_request:
+  workflow_dispatch:
+    inputs:
+      City:
+        required: false
+        default: Seattle
+env:
+  secret: "${{ secrets.8140A465_073B_4DF5_8AF6_F6578DAA8024_SECRET }}"
+#   # TimestamperBuildWrapper was not converted because the behavior is available by default in GitHub Actions and/or it is not configurable
+#   # AnsiColorBuildWrapper was not converted because the behavior is available by default in GitHub Actions and/or it is not configurable
+jobs:
+  build:
+    timeout-minutes: 3
+    runs-on:
+      - ubuntu-latest
+    steps:
+    - name: clean workspace
+      shell: bash
+      run: rm -rf ${{ github.workspace }}/*
+    - name: checkout
+      uses: actions/checkout@v2
+#     # 'org.jenkinsci.plugins.buildnameupdater.BuildNameUpdater' was not transformed because there is no suitable equivalent in GitHub Actions
+    - name: run command
+      shell: bash
+      run: echo "hello world"
+    - name: run command
+      shell: bash
+      run: echo "hello world"
+      if: always()
