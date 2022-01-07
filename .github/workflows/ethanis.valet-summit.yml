@@ -1,0 +1,51 @@
+name: build-playground/ethanis/ethanis.valet-summit
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      buildConfiguration: Release
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+    - run: dotnet restore
+    - name: dotnet build
+      run: dotnet build --configuration ${{ env.buildConfiguration }}
+    - run: dotnet test src/Summit.UnitTests.csproj --logger trx
+    - if: always()
+      name: Publish nunit test results
+      uses: dorny/test-reporter@v1
+      with:
+        path: "**/*.trx"
+        reporter: dotnet-trx
+    - run: dotnet publish --configuration ${{ env.BuildConfiguration }} --output ${{ runner.temp }}
+    - uses: actions/upload-artifact@v2
+      with:
+        name: summit-app
+        path: "${{ runner.temp }}"
+  publish:
+    needs:
+    - build
+    runs-on: ubuntu-latest
+    env:
+      appName: Summit
+    if: success() && github.ref == 'refs/heads/main'
+    steps:
+    - uses: actions/download-artifact@v2
+      with:
+        name: summit-app
+        path: "${{ github.workspace }}"
+    - uses: Azure/login@v1
+      with:
+        creds: "${{ secrets.AZURE_CREDENTIALS }}"
+    # The Azure Function App does not accept glob patterns. Consider updating the package path.
+    - uses: Azure/functions-action@v1
+      with:
+        app-name: "${{ env.appName }}"
+        package: "${{ github.workspace }}/**/*.zip"
